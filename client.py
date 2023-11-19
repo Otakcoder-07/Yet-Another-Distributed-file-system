@@ -4,7 +4,7 @@ import argparse
 
 class Client:
     def __init__(self, file_path):
-        self.conn = rpyc.connect("127.0.0.1", 12345)
+        self.conn = rpyc.connect("192.168.56.1", 12345)
         self.file_path = file_path
 
     def send_message(self, message):
@@ -56,9 +56,9 @@ class Client:
 
     def download_file(self, file_name):
         metadata = self.get_metadata()
-        print("\n\nmetadata:\n\n",metadata)
+        print("metadata:",metadata)
         block_detail = self.get_blockname_data(file_name)
-        print("block_detail:\n",block_detail)
+        print("block_detail:",block_detail)
         if not metadata or "block_locations" not in metadata:
             print(f"File '{file_name}' not found or metadata is missing.")
             return
@@ -82,8 +82,7 @@ class Client:
                 # block_name = 
                 if str(block_index) in block_detail:
                     block_name = block_detail[str(block_index)][0]
-                    print("\n\n\n\n\n")
-                    print(block_name)
+
                     data_block = data_node_conn.root.retrieve_data_block(block_name)
                     print('block : ',data_block)
                     file_data += data_block
@@ -103,7 +102,6 @@ class Client:
         file_path = os.path.join(os.getcwd(), "downloads", file_name)
         with open(file_path, "wb") as output_file:
             output_file.write(file_data)
-        # Step 4: Reassemble the file
 
         print(f"File '{file_name}' downloaded successfully.")
 

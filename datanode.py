@@ -69,19 +69,11 @@ class DataNode(rpyc.Service):
         return message  # Return the message to the client
 
     def exposed_retrieve_data_block(self, block_name):
-        try:
-            print("datanode opened")
-            print("Current working directory:", os.getcwd())
-    # Construct the correct file path with the "one" subdirectory
-            block_path = os.path.join(os.getcwd(), "datanode1", "one", block_name)
-            print("Block path:", block_path)
-       
-            with open(block_path, "rb") as block_file:
-                return block_file.read()
-        except FileNotFoundError as e:
-            print(f"Error: {e}")
-        return b""
-
+        # Implement logic to retrieve and return the data block
+        # block_name = str(block_name)+'.txt'
+        block_path = os.path.join(os.getcwd(), "datanode1\\one", block_name)
+        with open(block_path, "rb") as block_file:
+            return block_file.read()
 
     def create_directory(self, path):
         current_directory = os.getcwd()
@@ -122,7 +114,7 @@ if __name__ == "__main__":
     nn_details = {'port':12345,'ip_addr':'localhost'}
     dn_obj = DataNode(nn_details)
     # ip_addr = socket.gethostbyname(socket.gethostname())
-    dn_obj.connect_to_namenode('127.0.0.1',port)
+    dn_obj.connect_to_namenode('192.168.56.1',port)
     t = ThreadedServer(dn_obj, port=port)
     t.start()
 

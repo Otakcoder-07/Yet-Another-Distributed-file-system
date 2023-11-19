@@ -71,7 +71,7 @@ class DataNode(rpyc.Service):
     def exposed_retrieve_data_block(self, block_name):
         # Implement logic to retrieve and return the data block
         # block_name = str(block_name)+'.txt'
-        block_path = os.path.join(os.getcwd(), "datanode1", block_name)
+        block_path = os.path.join(os.getcwd(), "datanode2\\one", block_name)
         with open(block_path, "rb") as block_file:
             return block_file.read()
 
@@ -112,7 +112,7 @@ if __name__ == "__main__":
     nn_details = {'port':12345,'ip_addr':'localhost'}
     dn_obj = DataNode(nn_details)
     # ip_addr = socket.gethostbyname(socket.gethostname())
-    dn_obj.connect_to_namenode('127.0.0.1',port)
+    dn_obj.connect_to_namenode('192.168.56.1',port)
     t = ThreadedServer(dn_obj, port=12347)
     t.start()
 
