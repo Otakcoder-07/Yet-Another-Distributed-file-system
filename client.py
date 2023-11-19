@@ -5,6 +5,7 @@ import argparse
 class Client:
     def __init__(self, file_path):
         self.conn = rpyc.connect("192.168.56.1", 12345)
+        # print("issue")
         self.file_path = file_path
 
     def send_message(self, message):
@@ -123,6 +124,9 @@ if __name__ == "__main__":
 
     get_parser = subparsers.add_parser("get", help="Download a file")
     get_parser.add_argument("file_name", help="Name of the file to download")
+    
+    del_parser = subparsers.add_parser("del", help="Delete a file")
+    del_parser.add_argument("file_name", help="Name of the file to delete")
 
     args = parser.parse_args()
 
@@ -139,4 +143,8 @@ if __name__ == "__main__":
     elif args.command == "get":
         client = Client("")
         client.download_file(args.file_name)
+        client.close_connection()
+    elif args.command == "del":
+        client = Client(args.file_name)
+        client.send_file_name_to_nnd()
         client.close_connection()
