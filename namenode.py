@@ -10,7 +10,10 @@ import time
 
 
 datablocks = []
-
+class TreeNode:
+    def __init__(self, name):
+        self.name = name
+        self.children = []
 
 class NameNode(rpyc.Service):
     datanode_no = 0
@@ -40,12 +43,36 @@ class NameNode(rpyc.Service):
             print(f'file {self.filename} already exists')
             sys.exit(0)
     
+    # def exposed_list_filename(self):
+    #     cursor = self.coll.find({},{"file_name":1,"_id":0})
+    #     d=[]
+    #     for document in cursor:
+    #         d.append(document['file_name'])
+    #     return d
     def exposed_list_filename(self):
-        cursor = self.coll.find({},{"file_name":1,"_id":0})
-        d=[]
-        for document in cursor:
-            d.append(document['file_name'])
-        return d
+        cursor = self.coll.find({}, {"file_name": 1, "_id": 0})
+        filenames = [document['file_name'] for document in cursor]
+        root = TreeNode("Root")
+        for filename in filenames:
+            current_node = root
+            components = filename.split("/")
+            for component in components:
+                if component:
+                    child_node = next((child for child in current_node.children if child.name == component), None)
+                    if not child_node:
+                        child_node = TreeNode(component)
+                        current_node.children.append(child_node)
+                    current_node = child_node
+
+        print("List of filenames (Tree structure):")
+        self._print_tree(root, 0)
+        return filenames
+
+    def _print_tree(self, node, indent=0):
+        print("  " * indent + node.name)
+        for child in node.children:
+            self._print_tree(child, indent + 1)
+
             
     
 
