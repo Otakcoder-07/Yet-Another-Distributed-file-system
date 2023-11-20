@@ -40,6 +40,16 @@ class NameNode(rpyc.Service):
             print(f'file {self.filename} already exists')
             sys.exit(0)
     
+    def exposed_list_filename(self):
+        cursor = self.coll.find({},{"file_name":1,"_id":0})
+        d=[]
+        for document in cursor:
+            d.append(document['file_name'])
+        return d
+            
+    
+
+    
     def exposed_delete_filename(self,file_name):
         self.filename = file_name
         dict = {}
@@ -47,8 +57,10 @@ class NameNode(rpyc.Service):
         d = self.coll.find_one(dict)
         if(d == None):
             print("File doesnt exist")
+            return False
         else:
-            self.coll.delete_one(dict)            
+            self.coll.delete_one(dict)
+            return True            
 
     def exposed_write_file(self):
         # metadata = [

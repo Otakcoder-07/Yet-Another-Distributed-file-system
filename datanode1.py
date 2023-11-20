@@ -111,8 +111,8 @@ if __name__ == "__main__":
     port = 12347
     nn_details = {'port':12345,'ip_addr':'localhost'}
     dn_obj = DataNode(nn_details)
-    # ip_addr = socket.gethostbyname(socket.gethostname())
-    dn_obj.connect_to_namenode('127.0.0.1',port)
+    ip_addr = socket.gethostbyname(socket.gethostname())
+    dn_obj.connect_to_namenode(ip_addr,port)
     t = ThreadedServer(dn_obj, port=12347)
     t.start()
 

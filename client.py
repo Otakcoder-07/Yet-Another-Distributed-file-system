@@ -14,7 +14,19 @@ class Client:
     def send_file_name_to_nn(self):
         self.conn.root.update_filename(self.file_path)
     def send_file_name_to_nnd(self):
-        self.conn.root.delete_filename(self.file_path)
+        a=self.conn.root.delete_filename(self.file_path)
+        if a==True:
+            print("delete",self.file_path,"successful")
+        else:
+            print("delete",self.file_path,"unsuccessful,file does not exist in metadata")
+    
+    def send_file_name_to_nnl(self):
+        d=self.conn.root.list_filename()
+        print("Files:")
+        for i in d:
+            print("\t",i)
+
+
 
     def upload_file(self, path, ip_addr_array,block_size):
         lis=[]
@@ -160,6 +172,9 @@ if __name__ == "__main__":
     del_parser = subparsers.add_parser("del", help="Delete a file")
     del_parser.add_argument("file_name", help="Name of the file to delete")
 
+    l_parser = subparsers.add_parser("list", help="List a file")
+    #l_parser.add_argument("file_name", help="Name of the file to delete")
+
     args = parser.parse_args()
     #print(args)
     if args.command == "put":
@@ -179,4 +194,8 @@ if __name__ == "__main__":
     elif args.command == "del":
         client = Client(args.file_name)
         client.send_file_name_to_nnd()
+        client.close_connection()
+    elif args.command=='list':
+        client=Client('')
+        client.send_file_name_to_nnl()
         client.close_connection()
