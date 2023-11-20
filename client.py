@@ -7,6 +7,7 @@ class Client:
         self.conn = rpyc.connect("127.0.0.1", 12345)
         # print("issue")
         self.file_path = file_path
+        # self.file_name = file_name
 
     def send_message(self, message):
         self.conn.root.receive_message(message)
@@ -21,17 +22,20 @@ class Client:
             print("delete",self.file_path,"unsuccessful,file does not exist in metadata")
     
     def send_file_name_to_nnl(self):
-        d=self.conn.root.list_filename()
-        print("Files:")
-        for i in d:
-            print("\t",i)
+        d=self.conn.root.list_filename(self.file_path)
+        if(d == False): print("No directory")
+        elif d == True: print("Empty directory")
+        else:
+            print("Files:")
+            for i in d:
+                print("\t",i)
 
 
 
-    def upload_file(self, path, ip_addr_array,block_size):
+    def upload_file(self, path, ip_addr_array,block_size,file_name):
         lis=[]
         print(block_size)
-        blocks = self.split_file_fixed_size(block_size)
+        blocks = self.split_file_fixed_size(block_size,file_name)
         print(f"total Blocks {len(blocks)}")
         ip_addr = ip_addr_array['block_locations'][0]
         
@@ -51,10 +55,10 @@ class Client:
         num = conn.root.receive_message(path, message, ip_addr_array,self.file_path)
         return list(num['data'])
 
-    def split_file_fixed_size(self, block_size):
+    def split_file_fixed_size(self, block_size,file_name):
         blocks = []
 
-        with open(self.file_path, 'rb') as file:
+        with open(file_name, 'rb') as file:
             while True:
                 data = file.read(block_size)
                 if not data:
@@ -81,7 +85,9 @@ class Client:
             print("no datanode is active and hence cant retrieve")
             return
            
-
+        if(not block_detail):
+            print("file doesn't exist")
+            return
         # Step 2: Retrieve block locations
         block_locations = metadata["block_locations"]
 
@@ -99,6 +105,9 @@ class Client:
             # Request the data block from the DataNode
             while True:
                 # block_name = 
+                if block_detail==None:
+                    print("Your file does not exist")
+                    break
                 if str(block_index) in block_detail:
                     try:
                         block_name = block_detail[str(block_index)][0]
@@ -144,11 +153,12 @@ class Client:
         if(file_data==b''):
             print("either the datanode doesnt have file or the file is empty")
         else :
-            file_path = os.path.join(os.getcwd(), "downloads", file_name)
+            dile = file_name.split('/')[-1]
+            file_path = os.path.join(os.getcwd(), "downloads", dile)
             with open(file_path, "wb") as output_file:
                 output_file.write(file_data)
 
-            print(f"File '{file_name}' downloaded successfully.")
+            print(f"File '{dile}' downloaded successfully.")
 
     def get_data_nodes(self):
         return self.conn.root.write_file()
@@ -156,6 +166,10 @@ class Client:
     def get_blockname_data(self,filename):
         dock = self.conn.root.get_blockname_data(filename)
         return dock
+    
+    def create_directory(self):
+        self.conn.root.create_dir(self.file_path)
+
     def close_connection(self):
         self.conn.close()
 
@@ -165,6 +179,7 @@ if __name__ == "__main__":
 
     put_parser = subparsers.add_parser("put", help="Upload a file")
     put_parser.add_argument("file_name", help="Name of the file to upload")
+    put_parser.add_argument("file_path",help = "Path to the file")
 
     get_parser = subparsers.add_parser("get", help="Download a file")
     get_parser.add_argument("file_name", help="Name of the file to download")
@@ -173,18 +188,22 @@ if __name__ == "__main__":
     del_parser.add_argument("file_name", help="Name of the file to delete")
 
     l_parser = subparsers.add_parser("list", help="List a file")
-    #l_parser.add_argument("file_name", help="Name of the file to delete")
+    l_parser.add_argument("file_name", help="Name of the file to delete")
+
+    mkdir_parser = subparsers.add_parser("mkdir", help="Delete a file")
+    mkdir_parser.add_argument("file_name", help="Name of the file to delete")
 
     args = parser.parse_args()
     #print(args)
     if args.command == "put":
-        client = Client(args.file_name)
+        client = Client(args.file_path)
         block_size= 500  # Adjust to your preferred fixed block size
         lis = client.get_data_nodes()
         print(len(lis['block_locations']))
         client.send_file_name_to_nn()
-        
-        flag = client.upload_file("one", lis,block_size)
+        client.create_directory()
+        flag = client.upload_file("one", lis,block_size,args.file_name)
+
         print("Info:",flag)
         client.close_connection()
     elif args.command == "get":
@@ -196,6 +215,12 @@ if __name__ == "__main__":
         client.send_file_name_to_nnd()
         client.close_connection()
     elif args.command=='list':
-        client=Client('')
+        client=Client(args.file_name)
         client.send_file_name_to_nnl()
         client.close_connection()
+
+    elif args.command == 'mkdir':
+        client = Client(args.file_name)
+        client.create_directory()
+        client.close_connection()
+
