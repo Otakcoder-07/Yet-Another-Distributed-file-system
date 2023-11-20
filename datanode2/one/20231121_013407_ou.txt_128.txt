@@ -1,0 +1,14 @@
+l": true
+        }
+      }
+    },
+    "node_modules/mongodb-connection-string-url": {
+      "version": "2.6.0",
+      "resolved": "https://registry.npmjs.org/mongodb-connection-string-url/-/mongodb-connection-string-url-2.6.0.tgz",
+      "integrity": "sha512-WvTZlI9ab0QYtTYnuMLgobULWhokRjtC7db9LtcVfJ+Hsnyr5eo6ZtNAt3Ly24XZScGMelOcGtm7lSn0332tPQ==",
+      "dependencies": {
+        "@types/whatwg-url": "^8.2.1",
+        "whatwg-url": "^11.0.0"
+      }
+    },
+    "node_modules/mongoose"

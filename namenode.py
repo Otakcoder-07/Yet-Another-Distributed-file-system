@@ -54,10 +54,14 @@ class NameNode(rpyc.Service):
             if not cursor.alive:
                 return d
             for document in cursor:
-                print(document)
+                # print(document)
                 for key in document.keys():
                     d.append(key)
-            d.remove('_id')
+                try:
+                    d.remove('_id')
+                except:
+                    pass
+            
             return d
 
         elif '/' not in path:
@@ -80,10 +84,10 @@ class NameNode(rpyc.Service):
 
         
     def dir_working_for_listing(self,dir,endfile,dock2,i):
-        print("hello : ",dock2)
+        # print("hello : ",dock2)
         temp = next((obj for obj in dock2 if dir[i] in obj), None)
         # if temp == None:
-        print('temp :',temp,"\n endfile : ",endfile,"\ndir : ",dir,"\ndock2: ",dock2,"\ni : ",i)
+        # print('temp :',temp,"\n endfile : ",endfile,"\ndir : ",dir,"\ndock2: ",dock2,"\ni : ",i)
         if dir[i] == endfile:
             # temp_ = []
             if(temp):
@@ -108,23 +112,23 @@ class NameNode(rpyc.Service):
             # print(l)
             # print("dock2: ",dock2)
             # temp[dir[i]].extend(l)
-            print('temp :',temp,"\n endfile : ",endfile,"\ndir : ",dir,"\ndock2: ",dock2,"\ni : ",i)
+            # print('temp :',temp,"\n endfile : ",endfile,"\ndir : ",dir,"\ndock2: ",dock2,"\ni : ",i)
 
             # print(f"\n\nin dir if there {dock2}\n\n")
             return l
 
 
-    # def exposed_delete_filename(self,file_name):
-    #     self.filename = file_name
-    #     dict = {}
-    #     dict['file_name'] = file_name
-    #     d = self.coll.find_one(dict)
-    #     if(d == None):
-    #         print("File doesnt exist")
-    #         return False
-    #     else:
-    #         self.coll.delete_one(dict)
-    #         return True  
+    def exposed_delete_filename_met(self,file_name):
+        self.filename = file_name
+        dict = {}
+        dict['file_name'] = file_name
+        d = self.coll.find_one(dict)
+        if(d == None):
+            print("File doesnt exist")
+            return False
+        else:
+            self.coll.delete_one(dict)
+            return True   
 
     def exposed_delete_filename(self,path):
         if path == '/':
@@ -145,14 +149,17 @@ class NameNode(rpyc.Service):
             dock = self.dire_coll.find_one({dir[0]:{'$exists':True}})
             dock2 = dock[dir[0]]
             temp = self.dir_working_for_deleting(dir[1:],dir[-1],dock2,0)
-            print("dock : ",dock)
+            # print("dock : ",dock)
+            if temp:
+                self.dire_coll.delete_one({dir[0]:{'$exists':True}})
+                self.dire_coll.insert_one(dock)
             return temp
 
     def dir_working_for_deleting(self,dir,endfile,dock2,i):
-        print("hello : ",dock2)
+        # print("hello : ",dock2)
         temp = next((obj for obj in dock2 if dir[i] in obj), None)
         # if temp == None:
-        print('temp :',temp,"\n endfile : ",endfile,"\ndir : ",dir,"\ndock2: ",dock2,"\ni : ",i)
+        # print('temp :',temp,"\n endfile : ",endfile,"\ndir : ",dir,"\ndock2: ",dock2,"\ni : ",i)
         if dir[i] == endfile:
             # temp_ = []
             if(temp or temp == []):
@@ -162,20 +169,20 @@ class NameNode(rpyc.Service):
                 # end = {endfile:[]}
                 return False
             # dock2.append(end)
-            print(f"in dir if not {end}")
+            # print(f"in dir if not {end}")
             # dock2.append(temp)
-            return dock2
+            # return dock2
         elif temp == None:
             print(f"No directory {dir[i]}")
             return False
         else:
             self.dir_working(dir,endfile,temp[dir[i]],i+1)
             # print(l)
-            print("dock2: ",dock2)
+            # print("dock2: ",dock2)
             # temp[dir[i]].extend(l)
-            print('temp :',temp,"\n endfile : ",endfile,"\ndir : ",dir,"\ndock2: ",dock2,"\ni : ",i)
+            # print('temp :',temp,"\n endfile : ",endfile,"\ndir : ",dir,"\ndock2: ",dock2,"\ni : ",i)
 
-            print(f"\n\nin dir if there {dock2}\n\n")
+            # print(f"\n\nin dir if there {dock2}\n\n")
             return dock2    
     
 
@@ -217,7 +224,7 @@ class NameNode(rpyc.Service):
         return dock
 
     def exposed_mark_datanode(self,ip_dn,port_dn):
-        print(f'datanode :\nip : {ip_dn},port : {port_dn}')
+        print(f'datanode :\nip : {ip_dn},port : {port_dn} connected')
         detail = {'ip_addr':ip_dn,'port':port_dn}
         dock = self.dn_coll.find_one({'id':self.datanode_id})
         if(dock):
@@ -236,7 +243,7 @@ class NameNode(rpyc.Service):
             print('no datanode available')
             # sys.exit(0)
         else:
-            print(f'dn in alive{dn_detail}')
+            # print(f'dn in alive{dn_detail}')
             index = 0
             for dn_det in dn_detail['block_locations']:
                 ip_addr = dn_det['ip_addr']
@@ -285,10 +292,10 @@ class NameNode(rpyc.Service):
                         # else 
 
     def dir_working(self,dir,endfile,dock2,i):
-        print("hello : ",dock2)
+        # print("hello : ",dock2)
         temp = next((obj for obj in dock2 if dir[i] in obj), None)
         # if temp == None:
-        print('temp :',temp,"\n endfile : ",endfile,"\ndir : ",dir,"\ndock2: ",dock2,"\ni : ",i)
+        # print('temp :',temp,"\n endfile : ",endfile,"\ndir : ",dir,"\ndock2: ",dock2,"\ni : ",i)
         if dir[i] == endfile:
             # temp_ = []
             if(temp):
@@ -308,11 +315,11 @@ class NameNode(rpyc.Service):
         else:
             self.dir_working(dir,endfile,temp[dir[i]],i+1)
             # print(l)
-            print("dock2: ",dock2)
+            # print("dock2: ",dock2)
             # temp[dir[i]].extend(l)
-            print('temp :',temp,"\n endfile : ",endfile,"\ndir : ",dir,"\ndock2: ",dock2,"\ni : ",i)
+            # print('temp :',temp,"\n endfile : ",endfile,"\ndir : ",dir,"\ndock2: ",dock2,"\ni : ",i)
 
-            print(f"\n\nin dir if there {dock2}\n\n")
+            # print(f"\n\nin dir if there {dock2}\n\n")
             return dock2
                 
             

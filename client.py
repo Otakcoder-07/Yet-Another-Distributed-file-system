@@ -15,6 +15,7 @@ class Client:
     def send_file_name_to_nn(self):
         self.conn.root.update_filename(self.file_path)
     def send_file_name_to_nnd(self):
+        self.conn.root.delete_filename_met(self.file_path)
         a=self.conn.root.delete_filename(self.file_path)
         if a==True:
             print("delete",self.file_path,"successful")
@@ -34,7 +35,7 @@ class Client:
 
     def upload_file(self, path, ip_addr_array,block_size,file_name):
         lis=[]
-        print(block_size)
+        print(f"block sie : {block_size}")
         blocks = self.split_file_fixed_size(block_size,file_name)
         print(f"total Blocks {len(blocks)}")
         ip_addr = ip_addr_array['block_locations'][0]
@@ -44,7 +45,7 @@ class Client:
         for i, block in enumerate(blocks):
             k = self.upload_block(ip_addr['ip_addr'], ip_addr['port'], path, block, ip_addr_array)
             lis.append(k)
-        print('\n')
+        # print('\n')
         self.ping_nn_after_upload()
         return lis
         
@@ -71,18 +72,18 @@ class Client:
     
     def ping_nn_after_upload(self):
         self.conn.root.upload_complete()
-        print('\n\ndone\n\n')
+        print('file upload successful : ',self.file_path)
 
     def download_file(self, file_name):
         metadata = self.get_metadata()
-        print("metadata:",metadata)
+        # print("metadata:",metadata)
         block_detail = self.get_blockname_data(file_name)
         print("block_detail:",block_detail)
         if not metadata or "block_locations" not in metadata:
             print(f"File '{file_name}' not found or metadata is missing.")
             return
         if(metadata['block_locations']==None or metadata['block_locations']==[]):
-            print("no datanode is active and hence cant retrieve")
+            print("no datanode is active and hence can't retrieve")
             return
            
         if(not block_detail):
@@ -105,14 +106,11 @@ class Client:
             # Request the data block from the DataNode
             while True:
                 # block_name = 
-                if block_detail==None:
-                    print("Your file does not exist")
-                    break
                 if str(block_index) in block_detail:
                     try:
                         block_name = block_detail[str(block_index)][0]
                         data_block = data_node_conn.root.retrieve_data_block(block_name)
-                        print('block : ',data_block)
+                        # print('block : ',data_block)
                         ## IF we failed to store data in block
                         if data_block=="":
                             block_name = block_detail[str(block_index)][1]

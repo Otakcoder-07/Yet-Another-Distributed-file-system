@@ -1,0 +1,16 @@
+/PXqg==",
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/webidl-conversions": {
+      "version": "7.0.0",
+      "resolved": "https://registry.npmjs.org/webidl-conversions/-/webidl-conversions-7.0.0.tgz",
+      "integrity": "sha512-VwddBukDzu71offAQR975unBIGqfKZpM+8ZX6ySk8nYhVoo5CYaZyzt3YBvYtRtO+aoGlqxPg/B87NGVZ/fu6g==",
+      "engines": {
+        "node": ">=12"
+      }
+    },
+    "node_modules/whatwg-url": {
+      "version": "11.0.0",
+      "resolved"

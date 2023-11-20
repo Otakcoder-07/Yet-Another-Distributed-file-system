@@ -1,0 +1,22 @@
+,
+      "peerDependenciesMeta": {
+        "@aws-sdk/credential-providers": {
+          "optional": true
+        },
+        "@mongodb-js/zstd": {
+          "optional": true
+        },
+        "gcp-metadata": {
+          "optional": true
+        },
+        "kerberos": {
+          "optional": true
+        },
+        "mongodb-client-encryption": {
+          "optional": true
+        },
+        "snappy": {
+          "optional": true
+        },
+        "socks": {
+          "optiona

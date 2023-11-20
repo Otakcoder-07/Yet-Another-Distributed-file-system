@@ -1,0 +1,11 @@
+prep/-/saslprep-1.1.1.tgz",
+      "integrity": "sha512-t7c5K033joZZMspnHg/gWPE4kandgc2OxE74aYOtGKfgB9VPuVJPix0H6fhmm2erj5PBJ21mqcx34lpIGtUCsQ==",
+      "dependencies": {
+        "sparse-bitfield": "^3.0.3"
+      }
+    },
+    "node_modules/@types/node": {
+      "version": "20.8.10",
+      "resolved": "https://registry.npmjs.org/@types/node/-/node-20.8.10.tgz",
+      "integrity": "sha512-TlgT8JntpcbmKUFzjhsyhGfP2fsiz1Mv56im6enJ905xG1DAYesxJaeSbGqQmAw8OWPdhyJGhGSQGKRNJ45u9w==",
+      "dep

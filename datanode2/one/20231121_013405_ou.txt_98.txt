@@ -1,0 +1,12 @@
+sXR70xqIzVqxVf1eTqDunwT2MkczEeaezCKTZhwA==",
+      "dependencies": {
+        "get-intrinsic": "^1.1.3"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/has-property-descriptors": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/has-property-descriptors/-/has-property-descriptors-1.0.1.tgz",
+      "integrity": "sha512-VsX8eaIewvas0xnvinAe9bw4WfIeODpGYikiWYLH+dma0Jw6KHYqWiWfhQlgOVK8D6PvjubK5Uc4P0iIh

@@ -1,0 +1,16 @@
+IcNVg==",
+      "dependencies": {
+        "get-intrinsic": "^1.2.2"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/has-proto": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/has-proto/-/has-proto-1.0.1.tgz",
+      "integrity": "sha512-7qE+iP+O+bgF9clE5+UoBFzE65mlBiVj3tKCrlNQ0Ogwm0BjpT/gK4SlLYDMybDh5I3TCTKnPPa0oMG7JDYrhg==",
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "fundin

@@ -1,0 +1,20 @@
+{
+  "name": "manohae_se",
+  "version": "1.0.0",
+  "lockfileVersion": 3,
+  "requires": true,
+  "packages": {
+    "": {
+      "name": "manohae_se",
+      "version": "1.0.0",
+      "license": "ISC",
+      "dependencies": {
+        "express": "^4.18.2",
+        "mongodb": "^6.2.0",
+        "mongoose": "^8.0.0",
+        "socks": "^2.7.1"
+      }
+    },
+    "node_modules/@mongodb-js/saslprep": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@mongodb-js/sasl

@@ -1,0 +1,17 @@
+s": {
+        "@mongodb-js/saslprep": "^1.1.0",
+        "bson": "^6.2.0",
+        "mongodb-connection-string-url": "^2.6.0"
+      },
+      "engines": {
+        "node": ">=16.20.1"
+      },
+      "peerDependencies": {
+        "@aws-sdk/credential-providers": "^3.188.0",
+        "@mongodb-js/zstd": "^1.1.0",
+        "gcp-metadata": "^5.2.0",
+        "kerberos": "^2.0.1",
+        "mongodb-client-encryption": ">=6.0.0 <7",
+        "snappy": "^7.2.2",
+        "socks": "^2.7.1"
+      }
