@@ -4,7 +4,7 @@ import argparse
 
 class Client:
     def __init__(self, file_path):
-        self.conn = rpyc.connect("192.168.56.1", 12345)
+        self.conn = rpyc.connect("127.0.0.1", 12345)
         # print("issue")
         self.file_path = file_path
 
@@ -26,7 +26,7 @@ class Client:
         for i, block in enumerate(blocks):
             k = self.upload_block(ip_addr['ip_addr'], ip_addr['port'], path, block, ip_addr_array)
             lis.append(k)
-        print('\n\n\n\n\n\n')
+        print('\n')
         self.ping_nn_after_upload()
         return lis
         
@@ -63,6 +63,10 @@ class Client:
         if not metadata or "block_locations" not in metadata:
             print(f"File '{file_name}' not found or metadata is missing.")
             return
+        if(metadata['block_locations']==None or metadata['block_locations']==[]):
+            print("no datanode is active and hence cant retrieve")
+            return
+           
 
         # Step 2: Retrieve block locations
         block_locations = metadata["block_locations"]
@@ -82,16 +86,39 @@ class Client:
             while True:
                 # block_name = 
                 if str(block_index) in block_detail:
-                    block_name = block_detail[str(block_index)][0]
-
-                    data_block = data_node_conn.root.retrieve_data_block(block_name)
-                    print('block : ',data_block)
+                    try:
+                        block_name = block_detail[str(block_index)][0]
+                        data_block = data_node_conn.root.retrieve_data_block(block_name)
+                        print('block : ',data_block)
+                        ## IF we failed to store data in block
+                        if data_block=="":
+                            block_name = block_detail[str(block_index)][1]
+                            data_block = data_node_conn.root.retrieve_data_block(block_name)
+                            if data_block=="":
+                                block_name = block_detail[str(block_index)][2]
+                                data_block = data_node_conn.root.retrieve_data_block(block_name)                            
+                    except:
+                            try:
+                                block_name = block_detail[str(block_index)][1]
+                                data_block = data_node_conn.root.retrieve_data_block(block_name) 
+                                if data_block=="":
+                                    block_name = block_detail[str(block_index)][1]
+                                    data_block = data_node_conn.root.retrieve_data_block(block_name)
+                            except:
+                                try:
+                                    block_name = block_detail[str(block_index)][2]
+                                    data_block = data_node_conn.root.retrieve_data_block(block_name)
+                                    if data_block=="":
+                                        print("Empty nothing to see here")
+                                except:
+                                    print("Error you are datanodes are dead or file is corrupted/missing")
+                                    break                                                            
                     file_data += data_block
                     block_index+=1
                     # block_name = str(block_index)
 
                 else:
-                    print('not there')
+                    print('file not there')
                     break
             data_node_conn.close()
             # print('filedata : ',file_data)
@@ -100,11 +127,14 @@ class Client:
             # Close the connection to the DataNode
 
         # Step 4: Reassemble the file
-        file_path = os.path.join(os.getcwd(), "downloads", file_name)
-        with open(file_path, "wb") as output_file:
-            output_file.write(file_data)
+        if(file_data==b''):
+            print("either the datanode doesnt have file or the file is empty")
+        else :
+            file_path = os.path.join(os.getcwd(), "downloads", file_name)
+            with open(file_path, "wb") as output_file:
+                output_file.write(file_data)
 
-        print(f"File '{file_name}' downloaded successfully.")
+            print(f"File '{file_name}' downloaded successfully.")
 
     def get_data_nodes(self):
         return self.conn.root.write_file()
@@ -129,7 +159,7 @@ if __name__ == "__main__":
     del_parser.add_argument("file_name", help="Name of the file to delete")
 
     args = parser.parse_args()
-
+    #print(args)
     if args.command == "put":
         client = Client(args.file_name)
         block_size= 500  # Adjust to your preferred fixed block size
@@ -137,8 +167,8 @@ if __name__ == "__main__":
         print(len(lis['block_locations']))
         client.send_file_name_to_nn()
         
-        client.upload_file("one", lis,block_size)
-
+        flag = client.upload_file("one", lis,block_size)
+        print("Info:",flag)
         client.close_connection()
     elif args.command == "get":
         client = Client("")

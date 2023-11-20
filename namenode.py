@@ -39,29 +39,19 @@ class NameNode(rpyc.Service):
         else:
             print(f'file {self.filename} already exists')
             sys.exit(0)
-    
-    def exposed_delete_filename(self, file_name):
-        self.filename = file_name
-        dict = {}
-        dict['file_name'] = file_name
-        d = self.coll.find_one(dict)
-        if d==None:
-            print(f'file {self.filename} doesnt exist')
-            sys.exit(0)
-        else:
-            self.coll.delete_one({'file_name': file_name})
-            print("deleted")
-
 
     def exposed_write_file(self):
-        metadata = [
-            {"ip_addr": "192.168.56.1", "port": 12346, "block_name": "0.txt"},
-            {"ip_addr": "192.168.56.1", "port": 12347, "block_name": "50.txt"},
-            {"ip_addr": "192.168.56.1", "port": 12348, "block_name": "100.txt"}
-        ]
+        # metadata = [
+        #     {"ip_addr": "127.0.0.1", "port": 12346, "block_name": "0.txt"},
+        #     {"ip_addr": "127.0.0.1", "port": 12347, "block_name": "50.txt"},
+        #     {"ip_addr": "127.0.0.1", "port": 12348, "block_name": "100.txt"}
+        # ]
 
         #loading metadata
         k = self.dn_coll.find_one({'id':self.datanode_id})
+        if(k==None or k['block_locations']==None or k['block_locations']==[]):
+            print("cant upload or download files now try again after some time")
+            sys.exit(0)
         return {"block_locations": k['block_locations']}
 
     def exposed_receive_message(self, message):
@@ -103,20 +93,24 @@ class NameNode(rpyc.Service):
 
     def is_datanode_alive(self):
         dn_detail = self.dn_coll.find_one({'id':self.datanode_id})
-        print(f'dn in alive{dn_detail}')
-        index = 0
-        for dn_det in dn_detail['block_locations']:
-            ip_addr = dn_det['ip_addr']
-            port = dn_det['port']
-            try:
-                rpyc.connect(ip_addr,port)
-            except ConnectionRefusedError as e:
-                print(f'datanode with ip : {ip_addr} and port : {port} is lost and reason {e}')
-                dn_detail['block_locations'].pop(index)
-                self.dn_coll.update_one({'id':self.datanode_id},{'$set':{'block_locations':dn_detail['block_locations']}})
-            finally:
-                index += 1
-        time.sleep(500)
+        if(len(dn_detail['block_locations']) == 0):
+            print('no datanode available')
+            # sys.exit(0)
+        else:
+            print(f'dn in alive{dn_detail}')
+            index = 0
+            for dn_det in dn_detail['block_locations']:
+                ip_addr = dn_det['ip_addr']
+                port = dn_det['port']
+                try:
+                    rpyc.connect(ip_addr,port)
+                except ConnectionRefusedError as e:
+                    print(f'datanode with ip : {ip_addr} and port : {port} is lost and reason {e}')
+                    dn_detail['block_locations'].pop(index)
+                    self.dn_coll.update_one({'id':self.datanode_id},{'$set':{'block_locations':dn_detail['block_locations']}})
+                finally:
+                    index += 1
+        time.sleep(5)
         self.is_datanode_alive()
 
 
