@@ -13,6 +13,8 @@ class Client:
 
     def send_file_name_to_nn(self):
         self.conn.root.update_filename(self.file_path)
+    def send_file_name_to_nnd(self):
+        self.conn.root.delete_filename(self.file_path)
 
     def upload_file(self, path, ip_addr_array,block_size):
         lis=[]
